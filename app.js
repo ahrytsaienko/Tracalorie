@@ -57,6 +57,21 @@ const ItemCtrl = (() => {
 
             return newItem;
         },
+        updateItem: function(name, calories){
+            // Calories to a number because it's going from form
+            calories = parseInt(calories);
+            let found = null;
+
+            data.items.forEach(function(item){
+                if(item.id === data.currentItem.id){
+                    item.name = name;
+                    item.calories = calories;
+                    found = item;
+                }
+            });
+
+            return found;
+        },
         logData: function () {
             return data;
         },
@@ -85,6 +100,7 @@ const UICtrl = (function () {
 
         //
         itemList: '#item-list',
+        listItems: '#item-list li',
         itemNameInput: '#item-name',
         itemCaloriesInput: '#item-calories',
         totalCalories: '.total-calories',
@@ -135,6 +151,27 @@ const UICtrl = (function () {
 
             document.querySelector(UISelectors.itemList).insertAdjacentElement('beforeend', li)
         },
+        updateListItem: function(updatedItem){
+            let listItems = document.querySelectorAll(UICtrl.listItems);
+
+            // Turn Node list in to array
+            listItems = Array.from(listItems);
+            listItems.forEach(function(listItem){
+                const itemId = listItem.getAtribute('id');
+
+                if(itemId === `item-${item.id}`){
+                    document.querySelector(`#${itemid}`).innerHTML = `
+                    <strong>${item.name}: <em>${item.calories} Calories</em>
+                    </strong>
+                    <a href="#" class="secondary-content">
+                    <i class="edit-item fa fa-pencil"></i>
+                    </a>
+                    
+                    `;
+                }
+            });
+
+        },
         // When 0 items in item list it still the line on UI
         hideList: function () {
             document.querySelector(UISelectors.itemList).style.display = 'none';
@@ -177,8 +214,20 @@ const App = (function (ItemCtrl, UICtrl) {
         //Add item event
         document.querySelector(UISelectors.addBtn).addEventListener('click', itemAddSubmit);
 
+        // Disable submit on "enter"
+        document.addEventListener('keypress', function(e){
+            if(e.keyCode === 13 || e.which === 13){
+                e.preventDefault();
+                return false;
+            }
+        });
+
         // Edit icon click event
         document.querySelector(UISelectors.itemList).addEventListener('click', itemEditClick);
+
+        //Update item event
+        document.querySelector(UISelectors.updateBtn).addEventListener('click', itemUpdateSubmit);
+
     }
 
     const itemAddSubmit = function (e) {
@@ -201,6 +250,18 @@ const App = (function (ItemCtrl, UICtrl) {
             //Clear input fields
             UICtrl.clearInput();
         }
+
+        e.preventDefault();
+    }
+
+    const itemUpdateSubmit = function(e){
+       // Get item input
+       const input = UICtrl.getItemInput();
+
+       // Update item
+       const updatedItem = ItemCtrl.updateItem(input.name, input.calories);
+       // Update UI
+       UICtrl.updateListItem(updatedItem); 
 
         e.preventDefault();
     }
