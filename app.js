@@ -178,7 +178,7 @@ const App = (function (ItemCtrl, UICtrl) {
         document.querySelector(UISelectors.addBtn).addEventListener('click', itemAddSubmit);
 
         // Edit icon click event
-        document.querySelector(UISelectors.itemList).addEventListener('click', itemUpdateSubmit);
+        document.querySelector(UISelectors.itemList).addEventListener('click', itemEditClick);
     }
 
     const itemAddSubmit = function (e) {
@@ -205,8 +205,8 @@ const App = (function (ItemCtrl, UICtrl) {
         e.preventDefault();
     }
 
-    // Update item submit. Event delegation
-    const itemUpdateSubmit = function(e){
+    // Edit item. Event delegation
+    const itemEditClick = function(e){
         if(e.target.classList.contains('edit-item')){
             // Get list item id (item-0, item-1)
             const listId = e.target.parentNode.parentNode.id; // get only id from all posible
