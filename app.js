@@ -1,4 +1,31 @@
 // Storage Controller
+const StorageCtrl = (() => {
+    return {
+        // Publich methods
+        storeItem: function (item) {
+            let items;
+            // Check if any items in localStorage
+            if (localStorage.getItem('items') === null) {
+                items = [];
+            } else {
+                items = JSON.parse(localStorage.getItem('items'));
+            }
+            items.push(item);
+            localStorage.setItem('items', JSON.stringify(items));
+        },
+        getItemsFromStorage: function () {
+            let items;
+            if (localStorage.getItem('items') === null) {
+                items = [];
+            } else {
+                items = JSON.parse(localStorage.getItem('items'))
+            }
+
+            return items;
+        }
+    }
+})();
+
 
 // Item Controller
 const ItemCtrl = (() => {
@@ -10,11 +37,12 @@ const ItemCtrl = (() => {
 
     // Data Structure/ State
     const data = {
-        items: [
+        //items: [
             // { id: 0, name: 'Steak Dinner', calories: 1200 },
             // { id: 1, name: 'Cookie', calories: 400 },
             // { id: 2, name: 'Eggs', calories: 300 }
-        ],
+        //],
+        items: StorageCtrl.getItemsFromStorage(),
         currentItem: null,
         totalCalories: 0
     }
@@ -103,7 +131,7 @@ const ItemCtrl = (() => {
 })();
 
 // UI 
-const UICtrl = (function () {
+const UICtrl = (() => {
 
     const UISelectors = {
         //buttons
@@ -197,8 +225,8 @@ const UICtrl = (function () {
             let listItems = document.querySelectorAll(UISelectors.listItems);
             //Turn Node list into array
             listItems = Array.from(listItems);
-            listItems.forEach(function(item){
-                    item.remove();
+            listItems.forEach(function (item) {
+                item.remove();
             })
         },
         // When 0 items in item list it still the line on UI
@@ -235,7 +263,7 @@ const UICtrl = (function () {
 })();
 
 // App Controller
-const App = (function (ItemCtrl, UICtrl) {
+const App = ((ItemCtrl, StorageCtrl, UICtrl) => {
     //Load event listeners
     const loadEventListeners = function () {
         const UISelectors = UICtrl.getSelectors();
@@ -278,6 +306,8 @@ const App = (function (ItemCtrl, UICtrl) {
             const totalCalories = ItemCtrl.getTotalCalories();
             //Show total calories in UI
             UICtrl.showTotalCalories(totalCalories);
+            // Store in local storage
+            StorageCtrl.storeItem(newItem);
             //Clear input fields
             UICtrl.clearInput();
         }
@@ -379,6 +409,6 @@ const App = (function (ItemCtrl, UICtrl) {
         }
     }
 
-})(ItemCtrl, UICtrl);
+})(ItemCtrl, StorageCtrl, UICtrl);
 
 App.init();
